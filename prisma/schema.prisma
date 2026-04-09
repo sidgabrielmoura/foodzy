@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Establishment {
+  id           String     @id @default(uuid())
+  name         String
+  slug         String     @unique
+  whatsapp     String
+  logoUrl      String?
+  primaryColor String?    @default("#FF6B00")
+  createdAt    DateTime   @default(now())
+  categories   Category[]
+  products     Product[]
+}
+
+model Category {
+  id              String        @id @default(uuid())
+  name            String
+  order           Int           @default(0)
+  createdAt       DateTime      @default(now())
+  establishmentId String
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  products        Product[]
+}
+
+model Product {
+  id              String        @id @default(uuid())
+  name            String
+  description     String?
+  price           Decimal
+  imageUrl        String?
+  active          Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  establishmentId String
+  categoryId      String
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
